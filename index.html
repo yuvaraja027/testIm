@@ -26,6 +26,7 @@
     </style>
   </head>
   <body style="margin : 0px; overflow: hidden;">
+    <!-- minimal loader shown until image descriptors are loaded -->
     <div class="arjs-loader">
       <div>Loading, please wait...</div>
     </div>
@@ -47,6 +48,7 @@
       </a-assets>
 
       <a-nft
+        id="nft-marker"
         type="nft"
         url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
         smooth="true"
@@ -55,19 +57,37 @@
         smoothThreshold="5"
         videohandler
       >
-        <!-- Use a-plane with video material instead of a-video -->
-        <a-plane
-          material="src: #vid"
+        <a-video
+          id="ar-video"
+          src="https://yuvaraja027.github.io/testIm/video.mp4"
+          src="#vid"
           width="1.78"
           height="1"
           position="0 0 0"
-          rotation="-90 0 0"
-        ></a-plane>
+          rotation="0 0 0"
+          loop="true"
+        ></a-video>
       </a-nft>
       <a-entity camera></a-entity>
     </a-scene>
 
     <script>
+      // Wait for the NFT marker and video to be ready
+      document.addEventListener('DOMContentLoaded', function() {
+        const nftMarker = document.querySelector('#nft-marker');
+        const video = document.querySelector('#ar-video');
+        
+        // Video starts playing when marker is found
+        nftMarker.addEventListener('markerFound', function() {
+          console.log('Marker found - playing video');
+          video.components.material.material.map.image.play();
+        });
+        
+        // Video stops when marker is lost
+        nftMarker.addEventListener('markerLost', function() {
+          console.log('Marker lost - pausing video');
+          video.components.material.material.map.image.pause();
+        });
       AFRAME.registerComponent('videohandler', {
         init: function () {
           var marker = this.el;
@@ -81,6 +101,7 @@
             this.vid.pause();
           }.bind(this));
         }
+      });
       });
     </script>
   </body>
