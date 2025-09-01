@@ -37,6 +37,7 @@
       arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
     >
       <a-nft
+        id="nft-marker"
         type="nft"
         url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
         smooth="true"
@@ -45,16 +46,36 @@
         smoothThreshold="5"
       >
         <a-video
+          id="ar-video"
           src="https://yuvaraja027.github.io/testIm/video.mp4"
           width="1.78"
           height="1"
           position="0 0 0"
           rotation="0 0 0"
-          autoplay="true"
           loop="true"
         ></a-video>
       </a-nft>
       <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+      // Wait for the NFT marker and video to be ready
+      document.addEventListener('DOMContentLoaded', function() {
+        const nftMarker = document.querySelector('#nft-marker');
+        const video = document.querySelector('#ar-video');
+        
+        // Video starts playing when marker is found
+        nftMarker.addEventListener('markerFound', function() {
+          console.log('Marker found - playing video');
+          video.components.material.material.map.image.play();
+        });
+        
+        // Video stops when marker is lost
+        nftMarker.addEventListener('markerLost', function() {
+          console.log('Marker lost - pausing video');
+          video.components.material.material.map.image.pause();
+        });
+      });
+    </script>
   </body>
 </html>
